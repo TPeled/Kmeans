@@ -1,0 +1,152 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+
+typedef   double*   DATA;           
+
+struct linked_list {
+   DATA                 data;
+   struct linked_list   *next;
+};
+
+typedef   struct linked_list   ELEMENT;
+typedef   ELEMENT *             LINK;
+
+
+LINK create_element(int num_dims) {
+    LINK new_element = (LINK)malloc(sizeof(ELEMENT));
+    if (new_element == NULL) {
+        fprintf(stderr, "Memory allocation error\n");
+        exit(1);
+    }
+    new_element->data = (DATA)malloc(num_dims * sizeof(double));
+    if (new_element->data == NULL) {
+        fprintf(stderr, "Memory allocation error\n");
+        exit(1);
+    }
+    new_element->next = NULL;
+    return new_element;
+}
+
+int read_double(const char *str, int start, double *value) {
+    int i = start;
+    int sign = 1;
+    *value = 0.0;
+    double fraction = 0.0;
+    double divisor = 10.0;
+
+    // Skip whitespace
+    while (str[i] == ' ' || str[i] == '\t') {
+        i++;
+    }
+    
+    // Handle optional sign
+    if (str[i] == '-') {
+        sign = -1;
+        i++;
+    } else if (str[i] == '+') {
+        i++;
+    }
+
+    // Read integer part
+    while (str[i] >= '0' && str[i] <= '9') {
+        *value = *value * 10.0 + (str[i] - '0');
+        i++;
+    }
+
+    // Read fractional part
+    if (str[i] == '.') {
+        i++;
+        while (str[i] >= '0' && str[i] <= '9') {
+            fraction += (str[i] - '0') / divisor;
+            divisor *= 10.0;
+            i++;
+        }
+    }
+
+    *value = sign * (*value + fraction);
+    return i;
+}
+
+LINK textToList(char* text) {
+    char curr;
+    int i = 0;
+    int j = 0;
+    int dim = 1;
+    LINK head;
+    LINK curr_link;
+    int jump;
+
+
+    // find dim
+    curr = text[i];
+    while(curr != '\n') {
+        if (curr == ','){
+            dim++;
+        }
+        i++;
+    }
+
+    i = 0;
+    curr = text[i];
+
+
+    // init head
+    head = curr_link = create_element(dim);
+    
+    // read file and put everything in LL
+    while(curr != EOF) {
+        switch(curr) {
+            case ',':
+                i++;
+                break;
+            case '\n':
+                j=0;
+                LINK temp = create_element(dim);
+                curr_link->next = temp;
+                curr_link = temp;
+                i++;
+                break;
+            case EOF: 
+                break;
+            default:
+                jump = read_double(text, i,  &(curr_link->data[j++]));
+                i += jump;
+                break;
+        }
+    }
+}
+
+
+
+
+#define EPSILON = 0.001;
+char* text;
+
+
+double euclidean_distance(double *a, double *b, int dim) {
+    double sum = 0.0;
+    for (int i = 0; i < dim; i++) {
+        sum += pow(a[i] - b[i], 2);
+    }
+    return sqrt(sum);
+}
+
+
+int main(int argc, char** argv[]) {
+    int* in_centroid;
+    int k = 3;
+    int iter = 200;
+    LINK the_list;
+    int dim = 5;
+
+    in_centroid = (int*)calloc(k, sizeof(int));
+    
+}
+
+
+
+
+
+
